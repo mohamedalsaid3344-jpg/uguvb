@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PlayZone – حساب الوقت والسناكس</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf0fa;--surf:#fff;--ink:#0d1b3d;--mut:#5b6785;--line:#d3dbed;--blue:#0070d1;--bluebg:#e3f0fc;--on:#0a8f5b;--onbg:#dff5ea;--warn:#b96f00;--warnbg:#fdf0d6;--red:#d0342c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070d20;--surf:#111b3a;--ink:#e8eefc;--mut:#98a5c7;--line:#26335c;--blue:#4aa3ff;--bluebg:#12295a;--on:#3ddc97;--onbg:#0f3a2c;--warn:#ffc04d;--warnbg:#3a2c0c;--red:#ff6b61;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#070d20;--surf:#111b3a;--ink:#e8eefc;--mut:#98a5c7;--line:#26335c;--blue:#4aa3ff;--bluebg:#12295a;--on:#3ddc97;--onbg:#0f3a2c;--warn:#ffc04d;--warnbg:#3a2c0c;--red:#ff6b61;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo",Tahoma,Arial,sans-serif;line-height:1.5}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--surf);border-radius:10px;padding:8px 14px;font-weight:600}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn-p{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-g{background:var(--on);border-color:var(--on);color:#fff}
+.btn-d{color:var(--red)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#0b1f5c;color:#fff;flex-wrap:wrap}
+header h1{margin:0;font-size:1.35rem;font-weight:800}
+nav{display:flex;gap:6px}
+nav button{background:transparent;color:#cfe0ff;border-color:#2c4287}
+nav button.on{background:#fff;color:#0b1f5c;border-color:#fff}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;border-inline-start:6px solid var(--line)}
+.card.run{border-inline-start-color:var(--on)}
+.card.pause{border-inline-start-color:var(--warn)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.top h2{margin:0;font-size:1.1rem}
+.tag{font-size:.8rem;padding:2px 10px;border-radius:99px;background:var(--line);color:var(--mut);font-weight:600}
+.run .tag{background:var(--onbg);color:var(--on)}
+.pause .tag{background:var(--warnbg);color:var(--warn)}
+.timer{font-size:2.3rem;font-weight:800;direction:ltr;text-align:center;margin:8px 0;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;border:0;border-radius:0;background:transparent;color:var(--mut)}
+.seg button.on{background:var(--bluebg);color:var(--blue)}
+.rows{font-size:.95rem;margin:8px 0}
+.rows div{display:flex;justify-content:space-between;padding:2px 0}
+.rows .tot{border-top:1px dashed var(--line);margin-top:4px;padding-top:6px;font-weight:800;font-size:1.15rem}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.acts button{flex:1;white-space:nowrap}
+#modal{position:fixed;inset:0;background:rgba(5,10,30,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+#modal.open{display:flex}
+.box{background:var(--surf);border-radius:16px;padding:18px;width:100%;max-width:430px;max-height:88vh;overflow:auto}
+.box h3{margin:0 0 10px}
+.sn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.sn small{color:var(--mut)}
+.q{display:flex;align-items:center;gap:8px}
+.q button{width:36px;padding:4px 0}
+.q b{min-width:22px;text-align:center}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.panel h2{margin:0 0 10px;font-size:1.1rem}
+.f{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
+input{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+input[type=number]{width:90px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:start;padding:7px 6px;border-bottom:1px solid var(--line)}
+.wrap{overflow-x:auto}
+.sum{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sum div{flex:1;min-width:130px;background:var(--bluebg);border-radius:12px;padding:10px 14px}
+.sum b{display:block;font-size:1.5rem;color:var(--blue)}
+.empty{color:var(--mut);text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎮 PlayZone</h1>
+  <nav>
+    <button data-a="tab" data-t="dev" class="on">الأجهزة</button>
+    <button data-a="tab" data-t="log">سجل اليوم</button>
+    <button data-a="tab" data-t="set">الإعدادات</button>
+  </nav>
+</header>
+<main id="app"></main>
+<div id="modal"></div>
+
+<script>
+const KEY='ps_shop_v1';
+const def=()=>({rate:{single:20,multi:30},
+  snacks:[['شاي',10],['قهوة',15],['نسكافيه',15],['بيبسي',15],['شيبسي',10],['عصير',12],['مياه',5],['إندومي',20],['ساندوتش',25]].map((s,i)=>({id:'s'+i,name:s[0],price:s[1]})),
+  devs:[1,2,3,4,5,6].map(n=>newDev('d'+n,'جهاز '+n)),log:[],nid:20});
+function newDev(id,name){return{id,name,mode:'single',running:false,start:0,baseSec:0,baseCost:0,items:{}}}
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||def()}catch(e){S=def()}
+let tab='dev';
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const dev=id=>S.devs.find(d=>d.id===id);
+const rateOf=m=>S.rate[m];
+const seg=d=>d.running?(Date.now()-d.start)/1000:0;
+const secs=d=>d.baseSec+seg(d);
+const timeCost=d=>Math.ceil(d.baseCost+seg(d)/3600*rateOf(d.mode));
+const snackCost=d=>Object.entries(d.items).reduce((a,[id,q])=>{const s=S.snacks.find(x=>x.id===id);return a+(s?s.price*q:0)},0);
+const hms=t=>{t=Math.floor(t);const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return[h,m,s].map(x=>String(x).padStart(2,'0')).join(':')};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const commit=d=>{const g=seg(d);d.baseSec+=g;d.baseCost+=g/3600*rateOf(d.mode);d.start=Date.now()};
+
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  $('#app').innerHTML=tab==='dev'?vDev():tab==='log'?vLog():vSet();
+}
+function vDev(){
+  return '<div class="grid">'+S.devs.map(d=>{
+    const st=d.running?'run':(d.baseSec>0?'pause':'');
+    const lbl=d.running?'شغال':(d.baseSec>0?'متوقف مؤقتًا':'فاضي');
+    const n=Object.values(d.items).reduce((a,b)=>a+b,0);
+    return `<div class="card ${st}">
+    <div class="top"><h2>${esc(d.name)}</h2><span class="tag">${lbl}</span></div>
+    <div class="timer" data-t="${d.id}">${hms(secs(d))}</div>
+    <div class="seg"><button data-a="mode" data-id="${d.id}" data-m="single" class="${d.mode==='single'?'on':''}">سنجل · ${S.rate.single}ج</button><button data-a="mode" data-id="${d.id}" data-m="multi" class="${d.mode==='multi'?'on':''}">مالتي · ${S.rate.multi}ج</button></div>
+    <div class="rows"><div><span>الوقت</span><span data-c="${d.id}">${timeCost(d)} ج</span></div><div><span>السناكس (${n})</span><span>${snackCost(d)} ج</span></div><div class="tot"><span>الإجمالي</span><span data-tt="${d.id}">${timeCost(d)+snackCost(d)} ج</span></div></div>
+    <div class="acts">
+      <button class="${d.running?'':'btn-g'}" data-a="toggle" data-id="${d.id}">${d.running?'إيقاف مؤقت':(d.baseSec>0?'استئناف':'ابدأ')}</button>
+      <button data-a="snacks" data-id="${d.id}">+ سناكس</button>
+      <button class="btn-p" data-a="checkout" data-id="${d.id}">حساب</button>
+    </div></div>`}).join('')+'</div>';
+}
+function today(){return new Date().toLocaleDateString('en-CA')}
+function vLog(){
+  const L=S.log.filter(x=>x.day===today());
+  const sum=k=>L.reduce((a,x)=>a+x[k],0);
+  return `<div class="sum"><div>إجمالي اليوم<b>${sum('total')} ج</b></div><div>من الوقت<b>${sum('time')} ج</b></div><div>من السناكس<b>${sum('snack')} ج</b></div></div>
+  <div class="panel"><h2>الجلسات المنتهية (${L.length})</h2>`+(L.length?`<div class="wrap"><table><tr><th>الوقت</th><th>الجهاز</th><th>المدة</th><th>وقت</th><th>سناكس</th><th>الإجمالي</th></tr>`+L.slice().reverse().map(x=>`<tr><td>${x.at}</td><td>${esc(x.dev)}</td><td>${hms(x.sec)}</td><td>${x.time}</td><td>${x.snack}</td><td><b>${x.total}</b></td></tr>`).join('')+'</table></div>':'<div class="empty">لا توجد جلسات منتهية اليوم</div>')+
+  `</div><button class="btn-d" data-a="clearlog">مسح سجل اليوم</button>`;
+}
+function vSet(){
+  return `<div class="panel"><h2>سعر الساعة (جنيه)</h2><div class="f"><label>سنجل <input type="number" min="0" data-f="single" value="${S.rate.single}"></label><label>مالتي <input type="number" min="0" data-f="multi" value="${S.rate.multi}"></label></div></div>
+  <div class="panel"><h2>قائمة السناكس</h2>`+S.snacks.map(s=>`<div class="sn"><span>${esc(s.name)} <small>${s.price} ج</small></span><button class="btn-d" data-a="delsnack" data-id="${s.id}">حذف</button></div>`).join('')+
+  `<div class="f"><input id="sn" placeholder="اسم الصنف"><input id="sp" type="number" min="0" placeholder="السعر"><button class="btn-p" data-a="addsnack">إضافة</button></div></div>
+  <div class="panel"><h2>الأجهزة</h2>`+S.devs.map(d=>`<div class="f"><input data-n="${d.id}" value="${esc(d.name)}"><button class="btn-d" data-a="deldev" data-id="${d.id}">حذف</button></div>`).join('')+
+  `<button class="btn-p" data-a="adddev">+ إضافة جهاز</button></div>`;
+}
+function openModal(h){const m=$('#modal');m.innerHTML=`<div class="box">${h}</div>`;m.classList.add('open')}
+function closeModal(){$('#modal').classList.remove('open')}
+function snackModal(id){
+  const d=dev(id);
+  openModal(`<h3>سناكس – ${esc(d.name)}</h3>`+S.snacks.map(s=>`<div class="sn"><span>${esc(s.name)} <small>${s.price} ج</small></span><div class="q"><button data-a="qty" data-id="${id}" data-s="${s.id}" data-d="-1">−</button><b>${d.items[s.id]||0}</b><button data-a="qty" data-id="${id}" data-s="${s.id}" data-d="1">+</button></div></div>`).join('')+
+  `<p><b>إجمالي السناكس: ${snackCost(d)} ج</b></p><button class="btn-p" data-a="close">تم</button>`);
+}
+function checkoutModal(id){
+  const d=dev(id),t=timeCost(d),s=snackCost(d);
+  const items=Object.entries(d.items).filter(([,q])=>q>0).map(([k,q])=>{const x=S.snacks.find(z=>z.id===k);return x?`<div class="sn"><span>${esc(x.name)} × ${q}</span><span>${x.price*q} ج</span></div>`:''}).join('');
+  openModal(`<h3>فاتورة – ${esc(d.name)}</h3><div class="sn"><span>مدة اللعب</span><b>${hms(secs(d))}</b></div><div class="sn"><span>حساب الوقت</span><span>${t} ج</span></div>${items}<div class="sn"><span>إجمالي السناكس</span><span>${s} ج</span></div><div class="sn"><b>الإجمالي المطلوب</b><b style="font-size:1.4rem">${t+s} ج</b></div><div class="f" style="margin-top:12px"><button class="btn-g" data-a="confirm" data-id="${id}">تأكيد وإنهاء</button><button data-a="close">رجوع</button></div>`);
+}
+
+const A={
+  tab(x){tab=x.t;render()},
+  close:closeModal,
+  toggle(x){const d=dev(x.id);if(d.running){commit(d);d.running=false}else{d.running=true;d.start=Date.now()}save();render()},
+  mode(x){const d=dev(x.id);if(d.running)commit(d);else{}d.mode=x.m;save();render()},
+  snacks(x){snackModal(x.id)},
+  qty(x){const d=dev(x.id);const q=Math.max(0,(d.items[x.s]||0)+Number(x.d));d.items[x.s]=q;save();snackModal(x.id);render()},
+  checkout(x){const d=dev(x.id);if(!d.running&&d.baseSec===0&&snackCost(d)===0){return}checkoutModal(x.id)},
+  confirm(x){const d=dev(x.id);const t=timeCost(d),s=snackCost(d);
+    S.log.push({day:today(),at:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),dev:d.name,sec:secs(d),time:t,snack:s,total:t+s});
+    Object.assign(d,newDev(d.id,d.name));closeModal();save();render()},
+  clearlog(){if(confirm('مسح سجل اليوم؟')){S.log=S.log.filter(x=>x.day!==today());save();render()}},
+  addsnack(){const n=$('#sn').value.trim(),p=Number($('#sp').value);if(!n||!(p>=0)||$('#sp').value==='')return;S.snacks.push({id:'s'+(S.nid++),name:n,price:p});save();render()},
+  delsnack(x){S.snacks=S.snacks.filter(s=>s.id!==x.id);save();render()},
+  adddev(){const n=S.devs.length+1;S.devs.push(newDev('d'+(S.nid++),'جهاز '+n));save();render()},
+  deldev(x){const d=dev(x.id);if(d.running||d.baseSec>0){alert('أنهِ جلسة الجهاز أولًا');return}S.devs=S.devs.filter(z=>z.id!==x.id);save();render()}
+};
+document.addEventListener('click',e=>{
+  if(e.target.id==='modal'){closeModal();return}
+  const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset);
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.f){S.rate[t.dataset.f]=Math.max(0,Number(t.value)||0);save()}
+  if(t.dataset.n){const d=dev(t.dataset.n);d.name=t.value.trim()||d.name;save()}
+});
+setInterval(()=>{
+  if(tab!=='dev')return;
+  S.devs.forEach(d=>{
+    const a=document.querySelector(`[data-t="${d.id}"]`);if(!a)return;
+    a.textContent=hms(secs(d));
+    document.querySelector(`[data-c="${d.id}"]`).textContent=timeCost(d)+' ج';
+    document.querySelector(`[data-tt="${d.id}"]`).textContent=(timeCost(d)+snackCost(d))+' ج';
+  });
+},1000);
+render();
+</script>
+</body>
+</html>
